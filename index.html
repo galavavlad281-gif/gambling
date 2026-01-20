@@ -1,0 +1,591 @@
+!DOCTYPE html
+html lang=ru
+  head
+    meta charset=UTF-8 
+    meta name=viewport content=width=device-width, initial-scale=1.0 
+    titleCrypto Slot Simulatortitle
+    style
+       {
+        margin 0;
+        padding 0;
+        box-sizing border-box;
+      }
+
+      body {
+        font-family -apple-system, BlinkMacSystemFont, Segoe UI, Arial,
+          sans-serif;
+        background linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height 100vh;
+        color white;
+        padding 20px;
+      }
+
+      .container {
+        max-width 600px;
+        margin 0 auto;
+      }
+
+      .header {
+        text-align center;
+        margin-bottom 30px;
+      }
+
+      .header h1 {
+        font-size 3em;
+        background linear-gradient(45deg, #ffd700, #ff8c00);
+        -webkit-background-clip text;
+        -webkit-text-fill-color transparent;
+        background-clip text;
+        margin-bottom 10px;
+      }
+
+      .header p {
+        color rgba(255, 255, 255, 0.7);
+        font-size 0.9em;
+      }
+
+      .wallet {
+        background linear-gradient(135deg, #667eea, #764ba2);
+        border-radius 15px;
+        padding 20px;
+        margin-bottom 25px;
+        box-shadow 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .wallet-address {
+        font-size 0.85em;
+        opacity 0.8;
+        margin-bottom 10px;
+        word-break break-all;
+      }
+
+      .balance {
+        font-size 2em;
+        font-weight bold;
+        text-align right;
+      }
+
+      .balance-label {
+        font-size 0.5em;
+        opacity 0.8;
+      }
+
+      .slot-machine {
+        background #1a1a2e;
+        border-radius 20px;
+        padding 30px;
+        margin-bottom 25px;
+        box-shadow 0 15px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .slots {
+        display flex;
+        justify-content center;
+        gap 15px;
+        margin-bottom 30px;
+      }
+
+      .slot {
+        width 100px;
+        height 100px;
+        background linear-gradient(180deg, #2d2d44, #1a1a2e);
+        border 4px solid #ffd700;
+        border-radius 12px;
+        display flex;
+        align-items center;
+        justify-content center;
+        font-size 4em;
+        box-shadow 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .slot.spinning {
+        animation pulse 0.3s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform scale(1);
+        }
+        50% {
+          transform scale(1.05);
+        }
+      }
+
+      .message {
+        text-align center;
+        font-size 1.3em;
+        font-weight bold;
+        margin-bottom 20px;
+        min-height 30px;
+      }
+
+      .message.win {
+        color #4ade80;
+      }
+
+      .message.info {
+        color rgba(255, 255, 255, 0.6);
+      }
+
+      .bet-controls {
+        margin-bottom 25px;
+      }
+
+      .bet-controls label {
+        display block;
+        font-size 0.9em;
+        color rgba(255, 255, 255, 0.7);
+        margin-bottom 10px;
+      }
+
+      .bet-buttons {
+        display grid;
+        grid-template-columns repeat(4, 1fr);
+        gap 10px;
+      }
+
+      .bet-button {
+        padding 12px;
+        border none;
+        border-radius 8px;
+        font-weight bold;
+        cursor pointer;
+        font-size 1em;
+        transition all 0.2s;
+        background #2d2d44;
+        color white;
+      }
+
+      .bet-button.active {
+        background #ffd700;
+        color black;
+      }
+
+      .bet-buttonhovernot(.active) {
+        background #3d3d54;
+      }
+
+      .spin-button {
+        width 100%;
+        padding 18px;
+        background linear-gradient(135deg, #10b981, #059669);
+        border none;
+        border-radius 12px;
+        color white;
+        font-size 1.3em;
+        font-weight bold;
+        cursor pointer;
+        transition all 0.3s;
+        box-shadow 0 5px 20px rgba(16, 185, 129, 0.4);
+      }
+
+      .spin-buttonhovernot(disabled) {
+        transform translateY(-2px);
+        box-shadow 0 8px 25px rgba(16, 185, 129, 0.6);
+      }
+
+      .spin-buttondisabled {
+        background #4b5563;
+        cursor not-allowed;
+        box-shadow none;
+      }
+
+      .stats {
+        display grid;
+        grid-template-columns 1fr 1fr;
+        gap 15px;
+        margin-bottom 25px;
+      }
+
+      .stat-card {
+        background #1a1a2e;
+        border-radius 12px;
+        padding 20px;
+        border 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .stat-card.win {
+        border-color rgba(74, 222, 128, 0.3);
+      }
+
+      .stat-card.loss {
+        border-color rgba(239, 68, 68, 0.3);
+      }
+
+      .stat-label {
+        font-size 0.85em;
+        color rgba(255, 255, 255, 0.6);
+        margin-bottom 8px;
+      }
+
+      .stat-value {
+        font-size 1.5em;
+        font-weight bold;
+      }
+
+      .stat-value.win {
+        color #4ade80;
+      }
+
+      .stat-value.loss {
+        color #ef4444;
+      }
+
+      .history {
+        background #1a1a2e;
+        border-radius 12px;
+        padding 20px;
+        margin-bottom 15px;
+      }
+
+      .history h3 {
+        margin-bottom 15px;
+      }
+
+      .history-item {
+        background #2d2d44;
+        border-radius 8px;
+        padding 12px;
+        margin-bottom 8px;
+        display flex;
+        justify-content space-between;
+        align-items center;
+        font-size 0.9em;
+      }
+
+      .history-empty {
+        text-align center;
+        color rgba(255, 255, 255, 0.4);
+        padding 20px 0;
+      }
+
+      .reset-button {
+        width 100%;
+        padding 15px;
+        background #2d2d44;
+        border none;
+        border-radius 10px;
+        color white;
+        font-size 1em;
+        cursor pointer;
+        transition all 0.2s;
+        margin-bottom 20px;
+      }
+
+      .reset-buttonhover {
+        background #3d3d54;
+      }
+
+      .paytable {
+        background #1a1a2e;
+        border-radius 12px;
+        padding 20px;
+      }
+
+      .paytable h3 {
+        text-align center;
+        margin-bottom 15px;
+      }
+
+      .paytable-grid {
+        display grid;
+        grid-template-columns 1fr 1fr;
+        gap 10px;
+        margin-bottom 15px;
+      }
+
+      .paytable-item {
+        background #2d2d44;
+        border-radius 8px;
+        padding 10px;
+        display flex;
+        justify-content space-between;
+        align-items center;
+      }
+
+      .paytable-symbols {
+        font-size 1.3em;
+      }
+
+      .paytable-multiplier {
+        color #ffd700;
+        font-weight bold;
+      }
+
+      .paytable-note {
+        text-align center;
+        font-size 0.75em;
+        color rgba(255, 255, 255, 0.5);
+      }
+    style
+  head
+  body
+    div class=container
+      div class=header
+        h1CRYPTO SLOTSh1
+        pСимулятор • Без реальных денегp
+      div
+
+      div class=wallet
+        div class=wallet-address id=walletAddressdiv
+        div class=balance
+          span id=balance0span USDT
+          div class=balance-labelВиртуальный балансdiv
+        div
+      div
+
+      div class=slot-machine
+        div class=slots
+          div class=slot id=slot1🍋div
+          div class=slot id=slot2🍒div
+          div class=slot id=slot3🍊div
+        div
+
+        div class=message id=messagediv
+
+        div class=bet-controls
+          labelСтавка (USDT)label
+          div class=bet-buttons
+            button class=bet-button active onclick=setBet(10)10button
+            button class=bet-button onclick=setBet(25)25button
+            button class=bet-button onclick=setBet(50)50button
+            button class=bet-button onclick=setBet(100)100button
+          div
+        div
+
+        button class=spin-button id=spinButton onclick=spin()
+          КРУТИТЬ
+        button
+      div
+
+      div class=stats
+        div class=stat-card win
+          div class=stat-labelВыиграноdiv
+          div class=stat-value winspan id=totalWon0.00span USDTdiv
+        div
+        div class=stat-card loss
+          div class=stat-labelПроиграноdiv
+          div class=stat-value loss
+            span id=totalLost0.00span USDT
+          div
+        div
+      div
+
+      div class=history
+        h3История спиновh3
+        div id=historyList
+          div class=history-emptyНет историиdiv
+        div
+      div
+
+      button class=reset-button onclick=resetBalance()
+        Пополнить баланс (виртуальный)
+      button
+
+      div class=paytable
+        h3Таблица выплат (множитель × ставка)h3
+        div class=paytable-grid
+          div class=paytable-item
+            span class=paytable-symbols7️⃣ 7️⃣ 7️⃣span
+            span class=paytable-multiplier×50span
+          div
+          div class=paytable-item
+            span class=paytable-symbols💎 💎 💎span
+            span class=paytable-multiplier×30span
+          div
+          div class=paytable-item
+            span class=paytable-symbols⭐ ⭐ ⭐span
+            span class=paytable-multiplier×20span
+          div
+          div class=paytable-item
+            span class=paytable-symbols🍊 🍊 🍊span
+            span class=paytable-multiplier×10span
+          div
+          div class=paytable-item
+            span class=paytable-symbols🍒 🍒 🍒span
+            span class=paytable-multiplier×8span
+          div
+          div class=paytable-item
+            span class=paytable-symbols🍋 🍋 🍋span
+            span class=paytable-multiplier×5span
+          div
+        div
+        div class=paytable-note
+          Две одинаковые ×2  Три одинаковые указанный множитель
+        div
+      div
+    div
+
+    script
+      const SYMBOLS = [🍋, 🍒, 🍊, 💎, ⭐, 7️⃣];
+      const SYMBOL_VALUES = {
+        7️⃣ 50,
+        💎 30,
+        ⭐ 20,
+        🍊 10,
+        🍒 8,
+        🍋 5,
+      };
+
+      let balance = 1000;
+      let bet = 10;
+      let spinning = false;
+      let totalWon = 0;
+      let totalLost = 0;
+      let history = [];
+
+       Генерируем случайный TRC20 адрес
+      function generateWallet() {
+        const chars = ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789;
+        let addr = T;
+        for (let i = 0; i  33; i++) {
+          addr += chars[Math.floor(Math.random()  chars.length)];
+        }
+        return addr;
+      }
+
+      document.getElementById(walletAddress).textContent =
+        TRC20  + TU6rn2su3Bhyr2erk6GLwFtmtQNF8NpZZB;
+
+      function setBet(amount) {
+        if (spinning) return;
+        bet = amount;
+        document.querySelectorAll(.bet-button).forEach((btn) = {
+          btn.classList.remove(active);
+        });
+        event.target.classList.add(active);
+      }
+
+      function spin() {
+        if (spinning  balance  bet) {
+          showMessage(Недостаточно средств!, info);
+          return;
+        }
+
+        spinning = true;
+        balance -= bet;
+        totalLost += bet;
+        updateDisplay();
+
+        const slots = [
+          document.getElementById(slot1),
+          document.getElementById(slot2),
+          document.getElementById(slot3),
+        ];
+
+        slots.forEach((slot) = slot.classList.add(spinning));
+        document.getElementById(spinButton).disabled = true;
+        showMessage(, );
+
+        let counter = 0;
+        const interval = setInterval(() = {
+          slots.forEach((slot) = {
+            slot.textContent =
+              SYMBOLS[Math.floor(Math.random()  SYMBOLS.length)];
+          });
+          counter++;
+
+          if (counter  20) {
+            clearInterval(interval);
+            const result = [
+              SYMBOLS[Math.floor(Math.random()  SYMBOLS.length)],
+              SYMBOLS[Math.floor(Math.random()  SYMBOLS.length)],
+              SYMBOLS[Math.floor(Math.random()  SYMBOLS.length)],
+            ];
+
+            slots[0].textContent = result[0];
+            slots[1].textContent = result[1];
+            slots[2].textContent = result[2];
+
+            slots.forEach((slot) = slot.classList.remove(spinning));
+            checkWin(result);
+            spinning = false;
+            document.getElementById(spinButton).disabled = false;
+          }
+        }, 100);
+      }
+
+      function checkWin(result) {
+        const [first, second, third] = result;
+        let winAmount = 0;
+
+        if (first === second && second === third) {
+          winAmount = bet  SYMBOL_VALUES[first];
+          showMessage(`🎉 ВЫИГРЫШ! +${winAmount.toFixed(2)} USDT`, win);
+          balance += winAmount;
+          totalWon += winAmount;
+          addHistory(win, winAmount, result);
+        } else if (first === second  second === third  first === third) {
+          winAmount = bet  2;
+          showMessage(`✨ Пара! +${winAmount.toFixed(2)} USDT`, win);
+          balance += winAmount;
+          totalWon += winAmount;
+          addHistory(win, winAmount, result);
+        } else {
+          showMessage(Попробуйте еще раз!, info);
+          addHistory(loss, bet, result);
+        }
+
+        updateDisplay();
+      }
+
+      function showMessage(text, type) {
+        const msgEl = document.getElementById(message);
+        msgEl.textContent = text;
+        msgEl.className = message  + type;
+      }
+
+      function addHistory(type, amount, result) {
+        const time = new Date().toLocaleTimeString(ru-RU);
+        history.unshift({ type, amount, result result.join( ), time });
+        if (history.length  10) history.pop();
+        updateHistory();
+      }
+
+      function updateHistory() {
+        const historyEl = document.getElementById(historyList);
+        if (history.length === 0) {
+          historyEl.innerHTML = 'div class=history-emptyНет историиdiv';
+          return;
+        }
+
+        historyEl.innerHTML = history
+          .map(
+            (entry) = `
+                div class=history-item
+                    span${entry.result}span
+                    span style=color rgba(255,255,255,0.6)${
+                      entry.time
+                    }span
+                    span style=color ${
+                      entry.type === win  #4ade80  #ef4444
+                    }
+                        ${
+                          entry.type === win  +  -
+                        }${entry.amount.toFixed(2)}
+                    span
+                div
+            `
+          )
+          .join();
+      }
+
+      function updateDisplay() {
+        document.getElementById(balance).textContent = balance.toFixed(2);
+        document.getElementById(totalWon).textContent = totalWon.toFixed(2);
+        document.getElementById(totalLost).textContent = totalLost.toFixed(2);
+      }
+
+      function resetBalance() {
+        balance = 1000;
+        totalWon = 0;
+        totalLost = 0;
+        history = [];
+        showMessage(Баланс пополнен!, win);
+        updateDisplay();
+        updateHistory();
+      }
+    script
+  body
+html
